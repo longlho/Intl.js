@@ -975,6 +975,57 @@ function /* 9.2.10 */GetNumberOption (options, property, minimum, maximum, fallb
     return fallback;
 }
 
+Intl.getCanonicalLocales = function(locales) {
+  var locales = CanonicalizeLocaleList(locales);
+
+  var result = [];
+
+  for (var key in locales) {
+    result.push(locales[key]);
+  }
+
+  return result;
+};
+Intl.getParentLocales = function(locale) {
+  var localeChain = [];
+  var candidate = CanonicalizeLanguageTag(locale);
+
+  localeChain.push(candidate);
+
+  var pos = candidate.lastIndexOf('-');
+
+  while (pos > -1) {
+
+    if (pos >= 2 && candidate.charAt(pos - 2) === '-')
+      pos -= 2;
+    
+    candidate = candidate.substring(0, pos);
+
+    localeChain.push(candidate);
+
+    pos = candidate.lastIndexOf('-');
+  }
+
+  return localeChain;
+};
+Intl.resolveLocaleInfo = function(locale, options) {
+  locale = CanonicalizeLanguageTag(locale);
+
+  var resolvedOptions = Object.assign(options || {}, {
+    direction: true
+  });
+
+  var result = {locale: locale};
+
+  if (resolvedOptions.direction === true) {
+    // should come from layout/orientation/characterOrder
+    result.direction = ['ar', 'he', 'fa', 'ps', 'ur'].indexOf(locale) >= 0 ?
+    'rtl' : 'ltr';
+  }
+
+  return result;
+};
+
 // 11.1 The Intl.NumberFormat constructor
 // ======================================
 
