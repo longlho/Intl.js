@@ -117,7 +117,6 @@ class Locale {
         throw new RangeError(`${locale} is not a structurally valid language tag`);
     }
     let loc = CanonicalizeLanguageTag(locale);
-    console.log(loc);
     let res = deconstructLocaleString(loc);
     this.locale = res.locale;
 
@@ -144,21 +143,22 @@ class Locale {
     let extensionSubtags = UnicodeExtensionSubtags(res.extensions['u']);
 
     for (let i = 0; i < extensionSubtags.length; i++) {
-        let key = extensionSubtags[i];
-        if (keyToOptionMap.hasOwnProperty(key)) {
-            let value = extensionSubtags[++i];
+      let key = extensionSubtags[i];
+      if (keyToOptionMap.hasOwnProperty(key)) {
+          let value = extensionSubtags[++i];
 
-            let name = keyToOptionMap[key];
-            if (this.hasOwnProperty(name)) {
-                continue;
-            }
-            if (optionValues[name].hasOwnProperty('values') &&
-                !optionValues[name].values.includes(value)) {
-                  throw new RangeError(`Invalid value ${value} for key ${key}`);
-            }
-            this[name] = value;
-        }
+          let name = keyToOptionMap[key];
+          if (this.hasOwnProperty(name)) {
+              continue;
+          }
+          if (optionValues[name].hasOwnProperty('values') &&
+              !optionValues[name].values.includes(value)) {
+                throw new RangeError(`Invalid value ${value} for key ${key}`);
+          }
+          this[name] = value;
+      }
     }
+    Object.freeze(this);
   }
   
   toString() {
