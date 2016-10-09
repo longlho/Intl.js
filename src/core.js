@@ -33,6 +33,8 @@ import "./12.datetimeformat.js";
 
 import ls from "./13.locale-sensitive-functions.js";
 
+import "./14.locale.js";
+
 defineProperty(Intl, '__applyLocaleSensitivePrototypes', {
     writable: true,
     configurable: true,

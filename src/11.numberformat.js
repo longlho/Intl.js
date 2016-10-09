@@ -898,7 +898,7 @@ function ToRawFixed(x, minInteger, minFraction, maxFraction) {
 
 // Sect 11.3.2 Table 2, Numbering systems
 // ======================================
-let numSys = {
+export let numSys = {
     arab: ['\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668', '\u0669'],
     arabext: ['\u06F0', '\u06F1', '\u06F2', '\u06F3', '\u06F4', '\u06F5', '\u06F6', '\u06F7', '\u06F8', '\u06F9'],
     bali: ['\u1B50', '\u1B51', '\u1B52', '\u1B53', '\u1B54', '\u1B55', '\u1B56', '\u1B57', '\u1B58', '\u1B59'],

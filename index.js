@@ -23,5 +23,8 @@ let loc3 = new global.IntlPolyfill.Locale(x, {
   numeric: false,
   caseFirst: "false"
 });
+
+loc3.foo = 'foo';
+
 console.log(loc3);
 console.log(loc3.toString());

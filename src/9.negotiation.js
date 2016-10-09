@@ -19,7 +19,7 @@ import {
     DefaultLocale
 } from "./6.locales-currencies-tz.js";
 
-const expUnicodeExSeq = /-u(?:-[0-9a-z]{2,8})+/gi; // See `extension` below
+export const expUnicodeExSeq = /-u(?:-[0-9a-z]{2,8})+/gi; // See `extension` below
 
 export function /* 9.2.1 */CanonicalizeLocaleList (locales) {
 // The abstract operation CanonicalizeLocaleList takes the following steps:
