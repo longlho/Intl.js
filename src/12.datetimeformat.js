@@ -169,6 +169,8 @@ export function/* 12.1.1.1 */InitializeDateTimeFormat (dateTimeFormat, locales, 
     //     r.[[ca]].
     internal['[[calendar]]'] = r['[[ca]]'];
 
+    internal['[[hourCycle]]'] = r['[[hc]]'];
+
     // 13. Set the [[numberingSystem]] internal property of dateTimeFormat to the value of
     //     r.[[nu]].
     internal['[[numberingSystem]]'] = r['[[nu]]'];
@@ -251,8 +253,14 @@ export function/* 12.1.1.1 */InitializeDateTimeFormat (dateTimeFormat, locales, 
     } else {
         {
             // diverging
-            let hr12 = GetOption(options, 'hour12', 'boolean'/*, undefined, undefined*/);
-            opt.hour12 = hr12 === undefined ? dataLocaleData.hour12 : hr12;
+            let hc = GetOption(options, 'hourCycle', 'string', new List('h12', 'h24'), undefined);
+            if (hc === undefined) {
+                let hr12 = GetOption(options, 'hour12', 'boolean'/*, undefined, undefined*/);
+                if (hr12 === true) hc = 'h12';
+                if (hr12 === false) hc = 'h24';
+            }
+            //XXX: We should switch to opt.hourCycle here
+            opt.hour12 = hc === undefined ? dataLocaleData.hour12 : hc === 'h24';
         }
         // 29. Let bestFormat be the result of calling the BestFitFormatMatcher
         //     abstract operation (defined below) with opt and formats.
@@ -284,21 +292,24 @@ export function/* 12.1.1.1 */InitializeDateTimeFormat (dateTimeFormat, locales, 
 
     let pattern; // Assigned a value below
 
-    // 31. Let hr12 be the result of calling the GetOption abstract operation with
-    //     arguments options, "hour12", "boolean", undefined, and undefined.
-    let hr12 = GetOption(options, 'hour12', 'boolean'/*, undefined, undefined*/);
-
     // 32. If dateTimeFormat has an internal property [[hour]], then
     if (internal['[[hour]]']) {
-        // a. If hr12 is undefined, then let hr12 be the result of calling the [[Get]]
-        //    internal method of dataLocaleData with argument "hour12".
-        hr12 = hr12 === undefined ? dataLocaleData.hour12 : hr12;
+        let hc = GetOption(options, 'hourCycle', 'string', new List('h12', 'h24'), undefined);
 
-        // b. Set the [[hour12]] internal property of dateTimeFormat to hr12.
-        internal['[[hour12]]'] = hr12;
+        if (hc === undefined) {
+            // 31. Let hr12 be the result of calling the GetOption abstract operation with
+            //     arguments options, "hour12", "boolean", undefined, and undefined.
+            let hr12 = GetOption(options, 'hour12', 'boolean'/*, undefined, undefined*/);
+            if (hr12 === true) hc = 'h12';
+            if (hr12 === false) hc = 'h24';
+        }
+
+        if (hc !== undefined) {
+            internal['[[hourCycle]]'] = hc;
+        }
 
         // c. If hr12 is true, then
-        if (hr12 === true) {
+        if (internal['[[hourCycle]]'] === 'h12') {
             // i. Let hourNo0 be the result of calling the [[Get]] internal method of
             //    dataLocaleData with argument "hourNo0".
             let hourNo0 = dataLocaleData.hourNo0;
@@ -770,7 +781,7 @@ function BestFitFormatMatcher (options, formats) {
 
 /* 12.2.3 */internals.DateTimeFormat = {
     '[[availableLocales]]': [],
-    '[[relevantExtensionKeys]]': ['ca', 'nu'],
+    '[[relevantExtensionKeys]]': ['ca', 'nu', 'hc'],
     '[[localeData]]': {}
 };
 
@@ -968,7 +979,7 @@ function CreateDateTimeParts(dateTimeFormat, x) {
               }
               //   v. If p is "hour" and the value of the [[hour12]] internal property of
               //      dateTimeFormat is true, then
-              else if (p === 'hour' && internal['[[hour12]]'] === true) {
+              else if (p === 'hour' && internal['[[hourCycle]]'] === 'h12') {
                   // 1. Let v be v modulo 12.
                   v = v % 12;
                   // 2. If v is 0 and the value of the [[hourNo0]] internal property of
@@ -1141,7 +1152,7 @@ function ToLocalTime(date, calendar, timeZone) {
  * The function returns a new object whose properties and attributes are set as if
  * constructed by an object literal assigning to each of the following properties the
  * value of the corresponding internal property of this DateTimeFormat object (see 12.4):
- * locale, calendar, numberingSystem, timeZone, hour12, weekday, era, year, month, day,
+ * locale, calendar, numberingSystem, timeZone, hourCycle, weekday, era, year, month, day,
  * hour, minute, second, and timeZoneName. Properties whose corresponding internal
  * properties are not present are not assigned.
  */
@@ -1152,7 +1163,7 @@ function ToLocalTime(date, calendar, timeZone) {
         let prop,
             descs = new Record(),
             props = [
-                'locale', 'calendar', 'numberingSystem', 'timeZone', 'hour12', 'weekday',
+                'locale', 'calendar', 'numberingSystem', 'timeZone', 'hourCycle', 'weekday',
                 'era', 'year', 'month', 'day', 'hour', 'minute', 'second', 'timeZoneName'
             ],
             internal = this !== null && typeof this === 'object' && getInternalProperties(this);

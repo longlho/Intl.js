@@ -305,8 +305,15 @@ export function /* 9.2.5 */ResolveLocale (availableLocales, requestedLocales, op
         // c. Let keyLocaleData be the result of calling the [[Get]] internal
         //    method of foundLocaleData with the argument key.
         let keyLocaleData = foundLocaleData[key];
-        // d. Let value be the result of calling the [[Get]] internal method of
-        //    keyLocaleData with argument "0".
+
+        if (key === 'hc') {
+          if (foundLocale === 'pl') {
+            keyLocaleData = ['h24', 'h12'];
+          } else {
+            keyLocaleData = ['h12', 'h24'];
+          }
+        }
+        
         let value = keyLocaleData['0'];
         // e. Let supportedExtensionAddition be "".
         let supportedExtensionAddition = '';
